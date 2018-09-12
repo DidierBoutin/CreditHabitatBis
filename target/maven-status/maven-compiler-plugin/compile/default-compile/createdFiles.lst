@@ -1,0 +1,14 @@
+crud\model\Donnees.class
+crud\controller\MaterielControler.class
+crud\repository\ConnectionBase.class
+crud\model\Declarer.class
+crud\model\Societe.class
+crud\model\Totprod.class
+crud\repository\MaterielDAO.class
+crud\repository\DAO.class
+crud\model\Regroupm.class
+crud\service\MaterielService.class
+crud\model\Anomalie.class
+crud\CreditHabitat2Application.class
+crud\model\Departement.class
+crud\model\Materiel.class
