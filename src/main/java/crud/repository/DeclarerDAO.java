@@ -7,7 +7,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
- 
+import crud.dto.AvaliderBoxRow;
+import crud.dto.AvaliderRow;
 import crud.model.Declarer;
 
 
@@ -50,6 +51,77 @@ public class DeclarerDAO extends DAO<Declarer> {
 							+ "AND CODE_REGROUP_MAT = ?  AND  NUM_TRIM_DEC= ? "
 							+ "AND  AN_TRIM_DEC= ? AND CODE_DEV = ? ";
 	
+	//resquete de selection "DTO" pour la liste d'affichage
+	// de l'écran A AVALIDER
+	private final static String 
+					SQLAVALIDER = 
+							"SELECT DEP.NOM_DEP, DEP.CODE_PTT, " 
+							+ "DECL1.NB_DOSS_DEC, DECL1.MONTANT_DEC, " 
+							+ "DECL2.NB_DOSS_DEC, DECL2.MONTANT_DEC, "
+							+ "DECL1.MONTANT_DEC + DECL2.MONTANT_DEC "
+							+ "FROM DECLARER DECL1, DECLARER DECL2, DEPARTEMENT DEP "
+							+ "WHERE DECL1.CODE_SOC = DECL2.CODE_SOC "
+							+ "AND DECL1.CODE_PTT = DECL2.CODE_PTT "
+							+ "AND DECL1.NUM_TRIM_DEC = DECL2.NUM_TRIM_DEC " 
+							+ "AND DECL1.AN_TRIM_DEC = DECL2.AN_TRIM_DEC " 
+							+ "AND DECL1.CODE_DEV = DECL2.CODE_DEV "
+							+ "AND DECL1.CODE_PTT = DEP.CODE_PTT "
+							+ "AND (DECL1.CODE_REGROUP_MAT = 'RM1' "
+							+  "AND DECL2.CODE_REGROUP_MAT = 'RM2') "
+							+ "AND DECL1.CODE_SOC = ? "
+							+ "AND DECL1.AN_TRIM_DEC = ? "
+							+ "AND DECL1.NUM_TRIM_DEC = ? "
+							+ " UNION "
+							+ "SELECT DEP.NOM_DEP, DEP.CODE_PTT, " 
+							+ "DECL1.NB_DOSS_DEC, DECL1.MONTANT_DEC, 0, 0, DECL1.MONTANT_DEC " 
+							+ "FROM DECLARER DECL1, DEPARTEMENT DEP " 
+							+ "WHERE DECL1.CODE_PTT = DEP.CODE_PTT " 
+							+ "AND DECL1.CODE_REGROUP_MAT = 'RM1' " 
+							+ "AND DECL1.CODE_SOC = ? "
+							+ "AND DECL1.AN_TRIM_DEC = ? " 
+							+ "AND DECL1.NUM_TRIM_DEC = ? " 
+							+ "AND NOT EXISTS "  
+							+ "(SELECT * from DECLARER DECL2 " 
+							+ "WHERE DECL1.CODE_PTT = DECL2.CODE_PTT " 
+							+ "AND  DECL1.CODE_SOC = DECL2.CODE_SOC "
+							+ "AND DECL1.NUM_TRIM_DEC = DECL2.NUM_TRIM_DEC "
+							 + "AND DECL1.AN_TRIM_DEC = DECL2.AN_TRIM_DEC " 
+							+ "AND DECL1.CODE_DEV = DECL2.CODE_DEV "
+							+ "AND DECL2.CODE_REGROUP_MAT = 'RM2') " 
+							+ "UNION "
+							+ "SELECT DEP.NOM_DEP, DEP.CODE_PTT,0, 0, "
+							+ "DECL1.NB_DOSS_DEC, DECL1.MONTANT_DEC, DECL1.MONTANT_DEC " 
+							+ "FROM DECLARER DECL1, DEPARTEMENT DEP "
+							+ "WHERE  DECL1.CODE_PTT = DEP.CODE_PTT "
+							+ "AND DECL1.CODE_REGROUP_MAT = 'RM2' "
+							+ "AND DECL1.CODE_SOC = ? "
+							+ "AND DECL1.AN_TRIM_DEC = ? "
+							+ "AND DECL1.NUM_TRIM_DEC = ? "
+							+ "AND NOT EXISTS "
+							+ "(select * from DECLARER DECL2 "
+							+ "where DECL1.CODE_PTT = DECL2.CODE_PTT "
+							+ "and  DECL1.CODE_SOC = DECL2.CODE_SOC "
+							+ "AND DECL1.NUM_TRIM_DEC = DECL2.NUM_TRIM_DEC " 
+							+ " AND DECL1.AN_TRIM_DEC = DECL2.AN_TRIM_DEC " 
+							+ "AND DECL1.CODE_DEV = DECL2.CODE_DEV "
+							+ "AND DECL2.CODE_REGROUP_MAT = 'RM1') "
+							+ "ORDER BY 2";
+	
+	//requete de selection "DTO" 
+	// pour  la box de selection de  l'ecran A VALIDER
+	private final static String 
+				SQLSELPERIODE = 
+						  "SELECT DECL.CODE_SOC, DECL.NUM_TRIM_DEC, " 
+						+ "DECL.AN_TRIM_DEC , TOT.TOT_PROD " 
+						+ "FROM DECLARER DECL, TOTPROD TOT " 
+						+ "WHERE DECL.CODE_SOC = TOT.CODE_SOC " 
+						+ "AND DECL.NUM_TRIM_DEC = TOT.NUM_TRIM_TRAIT " 
+						+ "AND DECL.AN_TRIM_DEC = TOT.AN_TRIM_TRAIT " 
+						+ "GROUP BY (DECL.CODE_SOC, DECL.NUM_TRIM_DEC, " 
+						+ "DECL.AN_TRIM_DEC,  TOT.TOT_PROD) " 
+						+ "ORDER BY  DECL.CODE_SOC, DECL.AN_TRIM_DEC DESC, " 
+						+ "DECL.NUM_TRIM_DEC";  
+
 	
 	//====== FIND : get a Declarer =================
 	public Declarer find(Declarer declarer) {
@@ -137,7 +209,6 @@ public class DeclarerDAO extends DAO<Declarer> {
 			prepare.setInt(4, declarer.getNumTrimDec());
 			prepare.setInt(5, declarer.getAnTrimDec());
 			prepare.setString(6, declarer.getCodeDev());
-			
 			prepare.executeUpdate();
  		}
 		catch (SQLException e) { 
@@ -166,7 +237,7 @@ public class DeclarerDAO extends DAO<Declarer> {
 							ResultSet.CONCUR_UPDATABLE)
 					.executeQuery(SQLFINDALL);
 
-
+				
 			while (result.next()) {
 				declarer = new Declarer(
 						result.getNString("CODE_SOC"),
@@ -200,10 +271,8 @@ public class DeclarerDAO extends DAO<Declarer> {
 	public Declarer update(Declarer declarer) { 
 
 		try {
-			System.out.println("Connect");
-
-			PreparedStatement prepare =this.connect
-			.prepareStatement(SQLUPDATE);
+ 
+			PreparedStatement prepare =this.connect.prepareStatement(SQLUPDATE);
 			prepare.setInt(1, declarer.getNbDossDec());
 			prepare.setInt(2, declarer.getMtDec());
 			prepare.setString(3, declarer.getCodeUtil());
@@ -216,7 +285,7 @@ public class DeclarerDAO extends DAO<Declarer> {
 			prepare.setInt(10, declarer.getAnTrimDec());
 			prepare.setString(11, declarer.getCodeDev());
 			 
-			prepare.executeUpdate();
+			prepare.executeUpdate(); 
 
 			
 			declarer = this.find(declarer); 
@@ -233,7 +302,77 @@ public class DeclarerDAO extends DAO<Declarer> {
 
 	};
 	
-	
+	//====== RECUP INFO POUR ECRAN "A VALIDER" =================
+		public List<AvaliderRow> findAvalider(String soc, int an, int trim) { 
+
+			List<AvaliderRow> listAvalider = new ArrayList<AvaliderRow>();
+ 			AvaliderRow avaliderRow = new AvaliderRow();
+			System.out.println("findAvalider");
+			try {
+				System.out.println("SQLAVALIDER");	System.out.println(SQLAVALIDER);
+
+
+				PreparedStatement prepare =this.connect.prepareStatement(SQLAVALIDER);
+				prepare.setString(1, soc);prepare.setString(4, soc);prepare.setString(7, soc);
+				prepare.setInt(2, an);prepare.setInt(5, an);prepare.setInt(8, an);
+				prepare.setInt(3, trim);prepare.setInt(6, an);prepare.setInt(9, an);
+
+				ResultSet result = prepare.executeQuery(); 
+
+				System.out.println("result");	System.out.println(result);
+
+				while (result.next()) {
+					System.out.println("next");
+					avaliderRow = new AvaliderRow(
+							result.getNString(1),
+							result.getNString(2),
+							result.getInt(3),
+							result.getInt(4),
+							result.getInt(5),
+							result.getInt(6),
+							result.getInt(7) 
+							);
+					listAvalider.add(avaliderRow);
+				}
+			}
+			catch (SQLException e) { 
+				System.out.println("Select ListDeclarer KO : " + e);
+			}
+			return listAvalider;
+		};
+
+		//====== RECUP DTO POUR BOX DE PAGE A VALIDER =================
+		public List<AvaliderBoxRow> findAvaliderBox() { 
+
+			List<AvaliderBoxRow> listAvaliderBoxRow= new ArrayList<AvaliderBoxRow>();
+			AvaliderBoxRow avaliderBoxRow;
+			
+			try {
+ 
+				ResultSet result = this.connect
+						.createStatement(
+								ResultSet.TYPE_SCROLL_INSENSITIVE,
+								ResultSet.CONCUR_UPDATABLE)
+						.executeQuery(SQLSELPERIODE);
+
+					
+				while (result.next()) {
+					avaliderBoxRow = new AvaliderBoxRow(
+							result.getNString(1),
+	 						result.getInt(2),
+	 						result.getInt(3),
+							result.getInt(4)
+							 
+							);
+					listAvaliderBoxRow.add(avaliderBoxRow);
+				}
+			}
+			catch (SQLException e) { 
+				System.out.println("Select ListDeclarer KO : " + e);
+			}
+			return listAvaliderBoxRow;
+		};
+
 	
 }
 

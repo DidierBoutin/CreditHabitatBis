@@ -14,6 +14,7 @@ public Anomalie findAnomalie(Anomalie anomalie);
 
 	public void deleteAnomalie(Anomalie anomalie);
 	
-	public Anomalie updateAnomalie(Anomalie anomalie);	
-	
+	public Anomalie updateAnomalie(Anomalie anomalie);
+
+ 	
 }

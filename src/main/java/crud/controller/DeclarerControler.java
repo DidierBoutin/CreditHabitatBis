@@ -8,9 +8,12 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 
- import crud.model.Declarer;
+import crud.dto.AvaliderBoxRow;
+import crud.dto.AvaliderRow;
+import crud.model.Declarer;
  import crud.service.DeclarerService;
 import io.swagger.annotations.Api;
 
@@ -36,6 +39,23 @@ public class DeclarerControler {
  		return declarerService.findAll();
 	}
 	
+	@GET
+	@Path("/AvaliderBox")
+ 	public List<AvaliderBoxRow> findAvaliderBox () {
+ 		return declarerService.findAvaliderBox();
+	}
+	
+	@GET
+	@Path("/{soc}/{an}/{trim}")
+ 	public List<AvaliderRow> findAvaliderRow (	@PathParam(value = "soc") String soc, 
+ 												@PathParam(value = "an") int an, 
+ 												@PathParam(value = "trim") int trim ) {
+ 		System.out.println("soc"); 		System.out.println(soc);
+ 		System.out.println("an"); 		System.out.println(an);
+ 		System.out.println("trim"); 		System.out.println(trim);
+
+		return declarerService.findAvalider(soc, an, trim);
+	}
 
 	
 	@POST
