@@ -50,9 +50,7 @@ public class DeclarerControler {
  	public List<AvaliderRow> findAvaliderRow (	@PathParam(value = "soc") String soc, 
  												@PathParam(value = "an") int an, 
  												@PathParam(value = "trim") int trim ) {
- 		System.out.println("soc"); 		System.out.println(soc);
- 		System.out.println("an"); 		System.out.println(an);
- 		System.out.println("trim"); 		System.out.println(trim);
+ 		
 
 		return declarerService.findAvalider(soc, an, trim);
 	}

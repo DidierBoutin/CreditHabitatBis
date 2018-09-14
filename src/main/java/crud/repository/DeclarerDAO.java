@@ -111,8 +111,8 @@ public class DeclarerDAO extends DAO<Declarer> {
 	// pour  la box de selection de  l'ecran A VALIDER
 	private final static String 
 				SQLSELPERIODE = 
-						  "SELECT DECL.CODE_SOC, DECL.NUM_TRIM_DEC, " 
-						+ "DECL.AN_TRIM_DEC , TOT.TOT_PROD " 
+						  "SELECT DECL.CODE_SOC,  " 
+						+ "DECL.AN_TRIM_DEC , DECL.NUM_TRIM_DEC, TOT.TOT_PROD " 
 						+ "FROM DECLARER DECL, TOTPROD TOT " 
 						+ "WHERE DECL.CODE_SOC = TOT.CODE_SOC " 
 						+ "AND DECL.NUM_TRIM_DEC = TOT.NUM_TRIM_TRAIT " 
