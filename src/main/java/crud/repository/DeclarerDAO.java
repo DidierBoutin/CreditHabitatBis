@@ -56,56 +56,76 @@ public class DeclarerDAO extends DAO<Declarer> {
 	private final static String 
 					SQLAVALIDER = 
 							"SELECT DEP.NOM_DEP, DEP.CODE_PTT, " 
-							+ "DECL1.NB_DOSS_DEC, DECL1.MONTANT_DEC, " 
-							+ "DECL2.NB_DOSS_DEC, DECL2.MONTANT_DEC, "
-							+ "DECL1.MONTANT_DEC + DECL2.MONTANT_DEC "
-							+ "FROM DECLARER DECL1, DECLARER DECL2, DEPARTEMENT DEP "
-							+ "WHERE DECL1.CODE_SOC = DECL2.CODE_SOC "
-							+ "AND DECL1.CODE_PTT = DECL2.CODE_PTT "
-							+ "AND DECL1.NUM_TRIM_DEC = DECL2.NUM_TRIM_DEC " 
-							+ "AND DECL1.AN_TRIM_DEC = DECL2.AN_TRIM_DEC " 
-							+ "AND DECL1.CODE_DEV = DECL2.CODE_DEV "
-							+ "AND DECL1.CODE_PTT = DEP.CODE_PTT "
-							+ "AND (DECL1.CODE_REGROUP_MAT = 'RM1' "
-							+  "AND DECL2.CODE_REGROUP_MAT = 'RM2') "
-							+ "AND DECL1.CODE_SOC = ? "
-							+ "AND DECL1.AN_TRIM_DEC = ? "
-							+ "AND DECL1.NUM_TRIM_DEC = ? "
-							+ " UNION "
-							+ "SELECT DEP.NOM_DEP, DEP.CODE_PTT, " 
-							+ "DECL1.NB_DOSS_DEC, DECL1.MONTANT_DEC, 0, 0, DECL1.MONTANT_DEC " 
-							+ "FROM DECLARER DECL1, DEPARTEMENT DEP " 
-							+ "WHERE DECL1.CODE_PTT = DEP.CODE_PTT " 
-							+ "AND DECL1.CODE_REGROUP_MAT = 'RM1' " 
-							+ "AND DECL1.CODE_SOC = ? "
-							+ "AND DECL1.AN_TRIM_DEC = ? " 
-							+ "AND DECL1.NUM_TRIM_DEC = ? " 
-							+ "AND NOT EXISTS "  
-							+ "(SELECT * from DECLARER DECL2 " 
-							+ "WHERE DECL1.CODE_PTT = DECL2.CODE_PTT " 
-							+ "AND  DECL1.CODE_SOC = DECL2.CODE_SOC "
-							+ "AND DECL1.NUM_TRIM_DEC = DECL2.NUM_TRIM_DEC "
-							 + "AND DECL1.AN_TRIM_DEC = DECL2.AN_TRIM_DEC " 
-							+ "AND DECL1.CODE_DEV = DECL2.CODE_DEV "
-							+ "AND DECL2.CODE_REGROUP_MAT = 'RM2') " 
-							+ "UNION "
-							+ "SELECT DEP.NOM_DEP, DEP.CODE_PTT,0, 0, "
-							+ "DECL1.NB_DOSS_DEC, DECL1.MONTANT_DEC, DECL1.MONTANT_DEC " 
-							+ "FROM DECLARER DECL1, DEPARTEMENT DEP "
-							+ "WHERE  DECL1.CODE_PTT = DEP.CODE_PTT "
-							+ "AND DECL1.CODE_REGROUP_MAT = 'RM2' "
-							+ "AND DECL1.CODE_SOC = ? "
-							+ "AND DECL1.AN_TRIM_DEC = ? "
-							+ "AND DECL1.NUM_TRIM_DEC = ? "
-							+ "AND NOT EXISTS "
-							+ "(select * from DECLARER DECL2 "
-							+ "where DECL1.CODE_PTT = DECL2.CODE_PTT "
-							+ "and  DECL1.CODE_SOC = DECL2.CODE_SOC "
-							+ "AND DECL1.NUM_TRIM_DEC = DECL2.NUM_TRIM_DEC " 
-							+ " AND DECL1.AN_TRIM_DEC = DECL2.AN_TRIM_DEC " 
-							+ "AND DECL1.CODE_DEV = DECL2.CODE_DEV "
-							+ "AND DECL2.CODE_REGROUP_MAT = 'RM1') "
-							+ "ORDER BY 2";
+									+ "DECL1.NB_DOSS_DEC, DECL1.MONTANT_DEC, " 
+									+ "DECL2.NB_DOSS_DEC, DECL2.MONTANT_DEC, "
+									+ "DECL1.MONTANT_DEC + DECL2.MONTANT_DEC "
+									+ "FROM DECLARER DECL1, DECLARER DECL2, DEPARTEMENT DEP, "
+									+ "TOTPROD TOT "
+									+ "WHERE DECL1.CODE_SOC = DECL2.CODE_SOC "
+									+ "AND DECL1.CODE_PTT = DECL2.CODE_PTT "
+									+ "AND DECL1.NUM_TRIM_DEC = DECL2.NUM_TRIM_DEC " 
+									+ "AND DECL1.AN_TRIM_DEC = DECL2.AN_TRIM_DEC " 
+		 							+ "AND DECL1.CODE_DEV = DECL2.CODE_DEV "
+		 							+ "AND DECL1.CODE_SOC = TOT.CODE_SOC "
+ 									+ "AND DECL1.NUM_TRIM_DEC = TOT.NUM_TRIM_TRAIT " 
+									+ "AND DECL1.AN_TRIM_DEC = TOT.AN_TRIM_TRAIT " 
+		 							+ "AND DECL1.CODE_DEV = TOT.CODE_DEV "
+									+ "AND DECL1.CODE_DEV = 'EUR' "
+									+ "AND DECL1.CODE_PTT = DEP.CODE_PTT "
+									+ "AND (DECL1.CODE_REGROUP_MAT = 'RM1' "
+									+ "AND DECL2.CODE_REGROUP_MAT = 'RM2') "
+									+ "AND DECL1.CODE_SOC = ? "
+									+ "AND DECL1.AN_TRIM_DEC = ? "
+									+ "AND DECL1.NUM_TRIM_DEC = ?  "
+									
+									+ " UNION "
+									
+									+ "SELECT DEP.NOM_DEP, DEP.CODE_PTT, " 
+									+ "DECL1.NB_DOSS_DEC, DECL1.MONTANT_DEC, 0, 0, DECL1.MONTANT_DEC " 
+									+ "FROM DECLARER DECL1, DEPARTEMENT DEP, TOTPROD TOT " 
+									+ "WHERE DECL1.CODE_PTT = DEP.CODE_PTT " 
+									+ "AND DECL1.CODE_REGROUP_MAT = 'RM1' " 
+		 							+ "AND DECL1.CODE_DEV = 'EUR' "
+		 							+ "AND DECL1.CODE_SOC = TOT.CODE_SOC "
+		 							+ "AND DECL1.NUM_TRIM_DEC = TOT.NUM_TRIM_TRAIT " 
+									+ "AND DECL1.AN_TRIM_DEC = TOT.AN_TRIM_TRAIT " 
+		 							+ "AND DECL1.CODE_DEV = TOT.CODE_DEV "
+									+ "AND DECL1.CODE_SOC = ? "
+									+ "AND DECL1.AN_TRIM_DEC = ? " 
+									+ "AND DECL1.NUM_TRIM_DEC = ? " 
+									+ "AND NOT EXISTS "  
+									+ "(SELECT * FROM DECLARER DECL2 " 
+									+ "WHERE DECL1.CODE_PTT = DECL2.CODE_PTT " 
+									+ "AND  DECL1.CODE_SOC = DECL2.CODE_SOC "
+									+ "AND DECL1.NUM_TRIM_DEC = DECL2.NUM_TRIM_DEC "
+									+ "AND DECL1.AN_TRIM_DEC = DECL2.AN_TRIM_DEC " 
+									+ "AND DECL1.CODE_DEV = DECL2.CODE_DEV "
+									+ "AND DECL2.CODE_REGROUP_MAT = 'RM2') " 
+
+									+ "UNION " 
+								
+							 		+ "SELECT DEP.NOM_DEP, DEP.CODE_PTT, 0, 0, "
+									+ "DECL1.NB_DOSS_DEC, DECL1.MONTANT_DEC, DECL1.MONTANT_DEC " 
+									+ "FROM DECLARER DECL1, DEPARTEMENT DEP, TOTPROD TOT "
+									+ "WHERE  DECL1.CODE_PTT = DEP.CODE_PTT "
+									+ "AND DECL1.CODE_SOC = TOT.CODE_SOC "
+									+ "AND DECL1.NUM_TRIM_DEC = TOT.NUM_TRIM_TRAIT " 
+									+ "AND DECL1.AN_TRIM_DEC = TOT.AN_TRIM_TRAIT " 
+		 							+ "AND DECL1.CODE_DEV = TOT.CODE_DEV "
+									+ "AND DECL1.CODE_REGROUP_MAT = 'RM2' "
+		 							+ "AND DECL1.CODE_DEV = 'EUR' "
+									+ "AND DECL1.CODE_SOC = ? "
+									+ "AND DECL1.AN_TRIM_DEC = ? "
+									+ "AND DECL1.NUM_TRIM_DEC = ? "
+									+ "AND NOT EXISTS "
+									+ "(SELECT * FROM DECLARER DECL2 "
+									+ "WHERE DECL1.CODE_PTT = DECL2.CODE_PTT "
+									+ "AND  DECL1.CODE_SOC = DECL2.CODE_SOC "
+									+ "AND DECL1.NUM_TRIM_DEC = DECL2.NUM_TRIM_DEC " 
+									+ " AND DECL1.AN_TRIM_DEC = DECL2.AN_TRIM_DEC " 
+									+ "AND DECL1.CODE_DEV = DECL2.CODE_DEV "
+									+ "AND DECL2.CODE_REGROUP_MAT = 'RM1') "
+									+ " ORDER BY 2";
 	
 	//requete de selection "DTO" 
 	// pour  la box de selection de  l'ecran A VALIDER
@@ -117,6 +137,8 @@ public class DeclarerDAO extends DAO<Declarer> {
 						+ "WHERE DECL.CODE_SOC = TOT.CODE_SOC " 
 						+ "AND DECL.NUM_TRIM_DEC = TOT.NUM_TRIM_TRAIT " 
 						+ "AND DECL.AN_TRIM_DEC = TOT.AN_TRIM_TRAIT " 
+						+  "AND DECL.CODE_DEV = TOT.CODE_DEV "
+						+  "AND DECL.CODE_DEV = 'EUR' "
 						+ "GROUP BY (DECL.CODE_SOC, DECL.NUM_TRIM_DEC, " 
 						+ "DECL.AN_TRIM_DEC,  TOT.TOT_PROD) " 
 						+ "ORDER BY  DECL.CODE_SOC, DECL.AN_TRIM_DEC DESC, " 
@@ -308,15 +330,29 @@ public class DeclarerDAO extends DAO<Declarer> {
 			List<AvaliderRow> listAvalider = new ArrayList<AvaliderRow>();
  			AvaliderRow avaliderRow = new AvaliderRow();
 			System.out.println("findAvalider");
+			
+			System.out.println("soc"); 			System.out.println(soc);
+			System.out.println("an"); 			System.out.println(an);
+			System.out.println("trim"); 			System.out.println(trim);
+
+
 			try {
 				System.out.println("SQLAVALIDER");	System.out.println(SQLAVALIDER);
 
 
 				PreparedStatement prepare =this.connect.prepareStatement(SQLAVALIDER);
-				prepare.setString(1, soc);prepare.setString(4, soc);prepare.setString(7, soc);
-				prepare.setInt(2, an);prepare.setInt(5, an);prepare.setInt(8, an);
-				prepare.setInt(3, trim);prepare.setInt(6, an);prepare.setInt(9, an);
-
+//				prepare.setString(1, soc);prepare.setString(4, soc);prepare.setString(7, soc);
+//				prepare.setInt(2, an);prepare.setInt(5, an);prepare.setInt(8, an);
+//				prepare.setInt(3, trim);prepare.setInt(6, an);prepare.setInt(9, an);
+				prepare.setString(1, soc);
+				prepare.setInt(2, an); 
+				prepare.setInt(3, trim);
+				prepare.setString(4, soc);
+				prepare.setInt(5, an); 
+				prepare.setInt(6, trim);
+				prepare.setString(7, soc);
+				prepare.setInt(8, an); 
+				prepare.setInt(9, trim);
 				ResultSet result = prepare.executeQuery(); 
 
 				System.out.println("result");	System.out.println(result);
