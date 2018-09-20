@@ -61,15 +61,18 @@ public class DeclarerControler {
 	}
 	
 	@POST
-	@Path("/{soc}/{an}/{trim}/{regroup}")
+	@Path("/{soc}/{an}/{trim}")
 	@Consumes(MediaType.APPLICATION_JSON)
  	public void validSave  (@PathParam(value="soc") String soc,
  							@PathParam(value="an") int an,
- 							@PathParam(value="trim") int trim,
- 							@PathParam(value="regroup") String regroup
+ 							@PathParam(value="trim") int trim)
+  {
+ 		  System.out.println("postr ");
+			declarerService.validSave(soc, an, trim, "RM1");
+	 		  System.out.println("postr rm2");
+ 		  declarerService.validSave(soc, an, trim, "RM2");
+ 		  System.out.println("postr");
 
- 							) {
- 		  declarerService.validSave(soc, an, trim, regroup);
 	}
 	
 

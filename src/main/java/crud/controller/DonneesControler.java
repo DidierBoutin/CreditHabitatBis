@@ -78,14 +78,19 @@ public class DonneesControler {
 	}
 	
 	@DELETE
-	@Path("/{soc}/{an}/{trim}/{regroup}")
+	@Path("/{soc}/{an}/{trim}")
 	@Consumes(MediaType.APPLICATION_JSON)
  	public void deleteAval  (@PathParam(value="soc") String soc,
  							@PathParam(value="an") int an,
- 							@PathParam(value="trim") int trim,
- 							@PathParam(value="regroup") String regroup
- 							) {
- 		  donneesService.deleteAval(soc, an, trim, regroup);
+ 							@PathParam(value="trim") int trim
+  							) {
+		  System.out.println("del rm1");
+
+ 		  donneesService.deleteAval(soc, an, trim, "RM1");
+		  System.out.println("del rm2");
+
+ 		  donneesService.deleteAval(soc, an, trim, "RM2");
+
 	}
 	
 	
