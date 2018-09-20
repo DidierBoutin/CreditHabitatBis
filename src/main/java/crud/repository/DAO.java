@@ -50,6 +50,6 @@ public abstract class DAO<T> {
     * Permet la suppression de toutes les entrées du m^me nom de la base
     * @param obj
     */
-    public abstract void deleteAll(T obj);
+    //*public abstract void deleteAll(T obj);
 
 }

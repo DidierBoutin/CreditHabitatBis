@@ -4,8 +4,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import crud.dto.AvaliderBoxRow;
-import crud.dto.AvaliderRow;
 import crud.model.Declarer;
 import crud.repository.DeclarerDAO;
 
@@ -38,11 +36,10 @@ public class DeclarerServiceImpl implements DeclarerService {
 		return declarerDAO.update(declarer);
 	}
 
-	public List<AvaliderRow> findAvalider(String soc, int an, int trim) {
-		return declarerDAO.findAvalider(soc, an, trim);
+	public void validSave(String soc, int an, int trim, String regroup) {
+		declarerDAO.validSave(soc, an, trim, regroup);
 	}
 	
-	public List<AvaliderBoxRow> findAvaliderBox() {
-		return declarerDAO.findAvaliderBox();
-	}
+
+	
 }

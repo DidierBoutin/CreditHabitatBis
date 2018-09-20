@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.sql.Date;
 import java.util.List;
 
 import crud.dto.AvaliderBoxRow;
@@ -14,6 +16,7 @@ import crud.model.Declarer;
 
 public class DeclarerDAO extends DAO<Declarer> {
 
+ 	
 	private final static String 
 					SQLFIND = "SELECT * "
 							+ "FROM DECLARER "
@@ -52,9 +55,9 @@ public class DeclarerDAO extends DAO<Declarer> {
 							+ "AND  AN_TRIM_DEC= ? AND CODE_DEV = ? ";
 	
 	//resquete de selection "DTO" pour la liste d'affichage
-	// de l'écran A AVALIDER
+	// de l'écran A AVALIDER ===> DONNESS
 	private final static String 
-					SQLAVALIDER = 
+					SQLVALIDES = 
 							"SELECT DEP.NOM_DEP, DEP.CODE_PTT, " 
 									+ "DECL1.NB_DOSS_DEC, DECL1.MONTANT_DEC, " 
 									+ "DECL2.NB_DOSS_DEC, DECL2.MONTANT_DEC, "
@@ -130,7 +133,7 @@ public class DeclarerDAO extends DAO<Declarer> {
 	//requete de selection "DTO" 
 	// pour  la box de selection de  l'ecran A VALIDER
 	private final static String 
-				SQLSELPERIODE = 
+				SQLPERIODEVAL = 
 						  "SELECT DECL.CODE_SOC,  " 
 						+ "DECL.AN_TRIM_DEC , DECL.NUM_TRIM_DEC, TOT.TOT_PROD " 
 						+ "FROM DECLARER DECL, TOTPROD TOT " 
@@ -143,6 +146,24 @@ public class DeclarerDAO extends DAO<Declarer> {
 						+ "DECL.AN_TRIM_DEC,  TOT.TOT_PROD) " 
 						+ "ORDER BY  DECL.CODE_SOC, DECL.AN_TRIM_DEC DESC, " 
 						+ "DECL.NUM_TRIM_DEC";  
+
+	
+	private final static String 
+	SQLINSERTAVAL = "INSERT INTO DECLARER " + 
+			"(CODE_SOC ,CODE_PTT ,CODE_REGROUP_MAT ,NUM_TRIM_DEC ,AN_TRIM_DEC ,"
+			+ "NB_DOSS_DEC ,MONTANT_DEC ,CODE_UTIL ,DATE_VALID ,DATE_DEC ,CODE_DEV ) " 
+			+ "SELECT  DONN.CODE_SOC, DONN.CODE_PTT,  MAT.CODE_REGROUP_MAT, DONN.NUM_TRIM_TRAIT, "
+			+ "DONN.AN_TRIM_TRAIT, " 
+			+ "SUM(DONN.NB_DOSS), SUM(DONN.MONTANT), ? , ? , NULL, 'EUR' "  
+			+ "FROM DONNEES DONN, MATERIEL MAT " 
+ 			+ "WHERE DONN.CODE_SOC   = ? "  
+			+ "AND DONN.AN_TRIM_TRAIT = ? "  
+			+ "AND DONN.NUM_TRIM_TRAIT = ? " 
+			+ "AND DONN.CODE_MAT  =  MAT.CODE_MAT "  
+			+ "AND CODE_REGROUP_MAT = ? " 
+			+ "GROUP BY ( DONN.CODE_SOC, DONN.CODE_PTT,  MAT.CODE_REGROUP_MAT,  "
+			+ "DONN.NUM_TRIM_TRAIT, DONN.AN_TRIM_TRAIT) ";
+		
 
 	
 	//====== FIND : get a Declarer =================
@@ -217,6 +238,43 @@ public class DeclarerDAO extends DAO<Declarer> {
 	}
 
 
+	//====== SUITE A VALIDATION SUR ECRAN A VALIDER =================
+		public  void validSave(String soc, int an, int trim, String regroup) { 
+			
+ 			
+			Date dateSQL = new  Date(Calendar.getInstance().getTime().getTime());
+ 
+ 			
+			System.out.println("g");
+			
+ 			System.out.println("datejour");  
+			System.out.println(dateSQL);  
+			System.out.println(dateSQL.toString());  
+
+			
+			try {
+				PreparedStatement prepare = this.connect
+						.prepareStatement(SQLINSERTAVAL);
+				prepare.setString(1, "UTIL");
+				prepare.setDate(2, dateSQL);
+				prepare.setString(3, soc);
+	 			prepare.setInt(4, an);
+				prepare.setInt(5, trim);
+				prepare.setString(6, regroup);
+
+				
+				prepare.executeUpdate();
+			}
+			catch (SQLException e) {
+				System.out.println("validation KO : " + e);
+			}
+ 		}
+
+	
+	
+	
+	
+	
 	//====== DELETE delete a Declarer =================
 	public  void delete(Declarer declarer) { 
 
@@ -337,10 +395,10 @@ public class DeclarerDAO extends DAO<Declarer> {
 
 
 			try {
-				System.out.println("SQLAVALIDER");	System.out.println(SQLAVALIDER);
+				System.out.println("SQLVALIDES");	System.out.println(SQLVALIDES);
 
 
-				PreparedStatement prepare =this.connect.prepareStatement(SQLAVALIDER);
+				PreparedStatement prepare =this.connect.prepareStatement(SQLVALIDES);
 //				prepare.setString(1, soc);prepare.setString(4, soc);prepare.setString(7, soc);
 //				prepare.setInt(2, an);prepare.setInt(5, an);prepare.setInt(8, an);
 //				prepare.setInt(3, trim);prepare.setInt(6, an);prepare.setInt(9, an);
@@ -389,7 +447,7 @@ public class DeclarerDAO extends DAO<Declarer> {
 						.createStatement(
 								ResultSet.TYPE_SCROLL_INSENSITIVE,
 								ResultSet.CONCUR_UPDATABLE)
-						.executeQuery(SQLSELPERIODE);
+						.executeQuery(SQLPERIODEVAL);
 
 					
 				while (result.next()) {

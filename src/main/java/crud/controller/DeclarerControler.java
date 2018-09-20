@@ -11,9 +11,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 
-import crud.dto.AvaliderBoxRow;
-import crud.dto.AvaliderRow;
-import crud.model.Declarer;
+ import crud.model.Declarer;
  import crud.service.DeclarerService;
 import io.swagger.annotations.Api;
 
@@ -39,28 +37,14 @@ public class DeclarerControler {
  		return declarerService.findAll();
 	}
 	
-	@GET
-	@Path("/AvaliderBox")
- 	public List<AvaliderBoxRow> findAvaliderBox () {
- 		return declarerService.findAvaliderBox();
-	}
 	
-	@GET
-	@Path("/{soc}/{an}/{trim}")
- 	public List<AvaliderRow> findAvaliderRow (	@PathParam(value = "soc") String soc, 
- 												@PathParam(value = "an") int an, 
- 												@PathParam(value = "trim") int trim ) {
- 		
-
-		return declarerService.findAvalider(soc, an, trim);
-	}
 
 	
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
- 	public void CreateAnomalie (Declarer declarer) {
- 		declarerService.create(declarer);
-	}
+//	@POST
+//	@Consumes(MediaType.APPLICATION_JSON)
+// 	public void CreateAnomalie (Declarer declarer) {
+// 		declarerService.create(declarer);
+//	}
 	
 	@PUT
 	@Path("/DeleteByKey")
@@ -76,7 +60,18 @@ public class DeclarerControler {
 		return declarerService.update(declarer);
 	}
 	
+	@POST
+	@Path("/{soc}/{an}/{trim}/{regroup}")
+	@Consumes(MediaType.APPLICATION_JSON)
+ 	public void validSave  (@PathParam(value="soc") String soc,
+ 							@PathParam(value="an") int an,
+ 							@PathParam(value="trim") int trim,
+ 							@PathParam(value="regroup") String regroup
+
+ 							) {
+ 		  declarerService.validSave(soc, an, trim, regroup);
+	}
 	
-	
+
 	
 }

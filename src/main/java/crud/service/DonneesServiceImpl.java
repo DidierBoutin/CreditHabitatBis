@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import crud.dto.AvaliderBoxRow;
+import crud.dto.AvaliderRow;
 import crud.model.Donnees;
 import crud.repository.DonneesDAO;
 
@@ -32,8 +34,18 @@ public class DonneesServiceImpl implements DonneesService {
     	donneesDAO.delete(donnee);
     }
     
+    public void deleteAval(String soc, int an, int trim, String regroup) {
+    	donneesDAO.deleteAval(soc, an, trim, regroup);
+    }
+    
     public Donnees update(Donnees donnee) {
     	return donneesDAO.update(donnee);
 }
-    
+    public List<AvaliderRow> findAvalider(String soc, int an, int trim) {
+		return donneesDAO.findAvalider(soc, an, trim);
+	}
+	
+	public List<AvaliderBoxRow> findAvaliderBox() {
+		return donneesDAO.findAvaliderBox();
+	}
 }

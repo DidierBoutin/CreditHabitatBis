@@ -6,7 +6,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
- 
+import crud.dto.AvaliderBoxRow;
+import crud.dto.AvaliderRow;
 import crud.model.Donnees;
 
 
@@ -34,12 +35,132 @@ public class DonneesDAO extends DAO<Donnees> {
 							+ "AND  AN_TRIM_TRAIT = ? AND CODE_DEV = ? ";
 	
 	private final static String 
+					SQLDELAVAL = "DELETE FROM DONNEES DONN "
+			+ "WHERE   DONN.CODE_SOC = ? AND DONN.NUM_TRIM_TRAIT = ? AND DONN.AN_TRIM_TRAIT = ? "
+			+ " AND DONN.CODE_MAT IN "
+			+ " (SELECT  MAT.CODE_MAT FROM MATERIEL MAT "
+			+ " WHERE MAT.CODE_MAT = DONN.CODE_MAT "
+			+ " AND MAT.CODE_REGROUP_MAT = ?) ";
+	
+	private final static String 
 					SQLUPDATE = "UPDATE DONNEES "
 							+ "SET NB_DOSS	= ? , "
 							+ "MONTANT = ? "
 							+ "WHERE CODE_SOC = ?  AND CODE_MAT = ? AND CODE_PTT = ? AND  NUM_TRIM_TRAIT = ? "
 							+ "AND  AN_TRIM_TRAIT = ? AND CODE_DEV = ? ";
 	
+	
+
+	
+	
+	
+	private final static String 
+	SQLAVALIDER = 
+			   "SELECT DEP.NOM_DEP, DEP.CODE_PTT, "    
+			+ "SUM(DONN1.NB_DOSS), SUM(DONN1.MONTANT), " 
+            + "SUM(DONN2.NB_DOSS), SUM(DONN2.MONTANT), " 
+			+ "SUM(DONN1.MONTANT)  + SUM(DONN2.MONTANT) " 
+			+  "FROM DONNEES DONN1, DONNEES DONN2, DEPARTEMENT DEP, " 
+			+  "TOTPROD TOT, MATERIEL MAT1, MATERIEL MAT2 " 
+			+  "WHERE DONN1.CODE_SOC = DONN2.CODE_SOC " 
+			+  "AND DONN1.CODE_PTT = DONN2.CODE_PTT " 
+			+  "AND DONN1.NUM_TRIM_TRAIT= DONN2.NUM_TRIM_TRAIT " 
+			+  "AND DONN1.AN_TRIM_TRAIT= DONN2.AN_TRIM_TRAIT " 
+			+  "AND DONN1.CODE_DEV = DONN2.CODE_DEV "
+			+  "AND DONN1.CODE_SOC = TOT.CODE_SOC "
+			+  "AND DONN1.NUM_TRIM_TRAIT= TOT.NUM_TRIM_TRAIT "  
+			+  "AND DONN1.AN_TRIM_TRAIT= TOT.AN_TRIM_TRAIT "
+			+  "AND DONN1.CODE_DEV = TOT.CODE_DEV "
+			+  "AND DONN1.CODE_MAT = MAT1.CODE_MAT "
+			+  "AND DONN2.CODE_MAT = MAT2.CODE_MAT "
+			+  "AND DONN1.CODE_DEV = 'EUR' " 
+			+  "AND DONN1.CODE_PTT = DEP.CODE_PTT " 
+			+  "AND (MAT1.CODE_REGROUP_MAT = 'RM1' " 
+			+  "AND MAT2.CODE_REGROUP_MAT = 'RM2') " 
+			+  "AND DONN1.CODE_SOC = ? "
+			+  "AND DONN1.AN_TRIM_TRAIT= ? "
+			+  "AND DONN1.NUM_TRIM_TRAIT= ? "  
+			+  "GROUP BY  (DEP.NOM_DEP,  DONN1.CODE_PTT) "
+			
+			+  "UNION "
+			
+			+  "SELECT DEP.NOM_DEP, DEP.CODE_PTT, "  
+			+  " SUM(DONN1.NB_DOSS), SUM(DONN1.MONTANT), 0, 0, "
+			+ " SUM(DONN1.MONTANT) "    
+			+  "FROM DONNEES DONN1, DEPARTEMENT DEP, TOTPROD TOT, MATERIEL MAT1 "  
+			+  "WHERE DONN1.CODE_PTT = DEP.CODE_PTT "  
+			+  "AND DONN1.CODE_MAT = MAT1.CODE_MAT "  
+			+  "AND MAT1.CODE_REGROUP_MAT = 'RM1' "  
+			+  "AND DONN1.CODE_DEV = 'EUR' " 
+			+  "AND DONN1.CODE_SOC = TOT.CODE_SOC " 
+			+  "AND DONN1.NUM_TRIM_TRAIT= TOT.NUM_TRIM_TRAIT " 
+			+  "AND DONN1.AN_TRIM_TRAIT= TOT.AN_TRIM_TRAIT " 
+			+  "AND DONN1.CODE_DEV = TOT.CODE_DEV " 
+			+  "AND DONN1.CODE_SOC = ? "
+			+  "AND DONN1.AN_TRIM_TRAIT= ? " 
+			+  "AND DONN1.NUM_TRIM_TRAIT= ? "  
+			+  "AND NOT EXISTS "   
+			+  "(SELECT * FROM DONNEES DONN2, MATERIEL MAT2 "  
+			+  "WHERE DONN1.CODE_PTT = DONN2.CODE_PTT "  
+			+  "AND DONN1.CODE_SOC = DONN2.CODE_SOC " 
+			+  "AND DONN1.NUM_TRIM_TRAIT= DONN2.NUM_TRIM_TRAIT "
+			+  "AND DONN1.AN_TRIM_TRAIT= DONN2.AN_TRIM_TRAIT " 
+			+  "AND DONN1.CODE_DEV = DONN2.CODE_DEV " 
+			+  "AND DONN2.CODE_MAT = MAT2.CODE_MAT " 
+			+  "AND MAT2.CODE_REGROUP_MAT = 'RM2') "  
+			+  "GROUP BY  (DEP.NOM_DEP,  DONN1.CODE_PTT) "
+
+
+			+  "UNION "  
+		
+	 		+  "SELECT DEP.NOM_DEP, DEP.CODE_PTT, 0, 0, " 
+			+  "SUM(DONN1.NB_DOSS), SUM(DONN1.MONTANT), SUM(DONN1.MONTANT) "
+			+  "FROM DONNEES DONN1, DEPARTEMENT DEP, TOTPROD TOT, MATERIEL MAT1 " 
+			+  "WHERE  DONN1.CODE_PTT = DEP.CODE_PTT " 
+			+  "AND DONN1.CODE_MAT = MAT1.CODE_MAT "  
+			+  "AND DONN1.CODE_SOC = TOT.CODE_SOC " 
+			+  "AND DONN1.NUM_TRIM_TRAIT= TOT.NUM_TRIM_TRAIT "   
+			+  "AND DONN1.AN_TRIM_TRAIT= TOT.AN_TRIM_TRAIT "   
+		    +  "AND DONN1.CODE_DEV = TOT.CODE_DEV " 
+			+  "AND MAT1.CODE_REGROUP_MAT = 'RM2' " 
+			+  "AND DONN1.CODE_DEV = 'EUR' " 
+			+  "AND DONN1.CODE_SOC = ? " 
+			+  "AND DONN1.AN_TRIM_TRAIT= ? "
+			+  "AND DONN1.NUM_TRIM_TRAIT= ? "
+			+  "AND NOT EXISTS " 
+			+  "(SELECT * FROM DONNEES DONN2, MATERIEL MAT2 " 
+			+  "WHERE DONN1.CODE_PTT = DONN2.CODE_PTT " 
+			+  "AND  DONN1.CODE_SOC = DONN2.CODE_SOC " 
+			+  "AND DONN1.NUM_TRIM_TRAIT= DONN2.NUM_TRIM_TRAIT " 
+			+   "AND DONN1.AN_TRIM_TRAIT= DONN2.AN_TRIM_TRAIT " 
+			+  "AND DONN1.CODE_DEV = DONN2.CODE_DEV " 
+			+  "AND DONN2.CODE_MAT = MAT2.CODE_MAT "  
+			+  "AND MAT2.CODE_REGROUP_MAT = 'RM1') " 
+			+  "GROUP BY (DEP.NOM_DEP,  DONN1.CODE_PTT) "
+
+			+   "ORDER BY 2" ;
+
+	
+	//requete de selection "DTO" 
+		// pour  la box de selection de  l'ecran A VALIDER
+		private final static String 
+		SQLPERIODEVAL = 
+		  "SELECT DONN.CODE_SOC,  " 
+			+ "DONN.AN_TRIM_TRAIT , DONN.NUM_TRIM_TRAIT, TOT.TOT_PROD " 
+			+ "FROM DONNEES DONN, TOTPROD TOT " 
+			+ "WHERE DONN.CODE_SOC = TOT.CODE_SOC " 
+			+ "AND DONN.NUM_TRIM_TRAIT = TOT.NUM_TRIM_TRAIT " 
+			+ "AND DONN.AN_TRIM_TRAIT = TOT.AN_TRIM_TRAIT " 
+			+  "AND DONN.CODE_DEV = TOT.CODE_DEV "
+			+  "AND DONN.CODE_DEV = 'EUR' "
+			+ "GROUP BY (DONN.CODE_SOC, DONN.NUM_TRIM_TRAIT, " 
+			+ "DONN.AN_TRIM_TRAIT,  TOT.TOT_PROD) " 
+			+ "ORDER BY  DONN.CODE_SOC, DONN.AN_TRIM_TRAIT DESC, " 
+			+ "DONN.NUM_TRIM_TRAIT";  
+
+
+		
+
 	
 	//====== FIND : get a Donnees =================
 	public Donnees find(Donnees donnee) {
@@ -139,8 +260,28 @@ public class DonneesDAO extends DAO<Donnees> {
 		System.out.println("Donnees delete ");
 	}
 
-	//=======DELETEALL : To delete all Donneess
-	public  void deleteAll(Donnees Donnees) { };
+ 
+	
+	//======= Pour supprimer les DONNEES suite à une validation
+	public  void deleteAval(String soc, int an, int trim, String regroup) { 
+		
+		try {
+			 
+			PreparedStatement prepare = this.connect
+			.prepareStatement(SQLDELAVAL);
+			prepare.setString(1, soc);
+			prepare.setInt(2, trim);
+ 			prepare.setInt(3, an);
+ 			prepare.setString(4, regroup);
+			 
+			
+			prepare.executeUpdate();
+ 		}
+		catch (SQLException e) { 
+			System.out.println("Delete Donnees A AVAL KO : " + e);
+		}
+		System.out.println("Donnees delete  AVAL");
+	};
 
 
 
@@ -222,6 +363,92 @@ public class DonneesDAO extends DAO<Donnees> {
 
 	};
 	
+	
+	//====== RECUP INFO POUR ECRAN "A VALIDER" =================
+			public List<AvaliderRow> findAvalider(String soc, int an, int trim) { 
+
+				List<AvaliderRow> listAvalider = new ArrayList<AvaliderRow>();
+	 			AvaliderRow avaliderRow = new AvaliderRow();
+				System.out.println("findAvalider");
+				
+				System.out.println("soc"); 			System.out.println(soc);
+				System.out.println("an"); 			System.out.println(an);
+				System.out.println("trim"); 			System.out.println(trim);
+
+
+				try {
+					System.out.println("SQLAVALIDER");	System.out.println(SQLAVALIDER);
+
+
+					PreparedStatement prepare =this.connect.prepareStatement(SQLAVALIDER);
+//					prepare.setString(1, soc);prepare.setString(4, soc);prepare.setString(7, soc);
+//					prepare.setInt(2, an);prepare.setInt(5, an);prepare.setInt(8, an);
+//					prepare.setInt(3, trim);prepare.setInt(6, an);prepare.setInt(9, an);
+					prepare.setString(1, soc);
+					prepare.setInt(2, an); 
+					prepare.setInt(3, trim);
+					prepare.setString(4, soc);
+					prepare.setInt(5, an); 
+					prepare.setInt(6, trim);
+					prepare.setString(7, soc);
+					prepare.setInt(8, an); 
+					prepare.setInt(9, trim);
+					ResultSet result = prepare.executeQuery(); 
+
+					System.out.println("result");	System.out.println(result);
+
+					while (result.next()) {
+						System.out.println("next");
+						avaliderRow = new AvaliderRow(
+								result.getNString(1),
+								result.getNString(2),
+								result.getInt(3),
+								result.getInt(4),
+								result.getInt(5),
+								result.getInt(6),
+								result.getInt(7) 
+								);
+						listAvalider.add(avaliderRow);
+					}
+				}
+				catch (SQLException e) { 
+					System.out.println("Select ListDeclarer KO : " + e);
+				}
+				return listAvalider;
+			};
+
+			//====== RECUP DTO POUR BOX DE PAGE A VALIDER =================
+			public List<AvaliderBoxRow> findAvaliderBox() { 
+
+				List<AvaliderBoxRow> listAvaliderBoxRow= new ArrayList<AvaliderBoxRow>();
+				AvaliderBoxRow avaliderBoxRow;
+				
+				try {
+	 
+					ResultSet result = this.connect
+							.createStatement(
+									ResultSet.TYPE_SCROLL_INSENSITIVE,
+									ResultSet.CONCUR_UPDATABLE)
+							.executeQuery(SQLPERIODEVAL);
+
+						
+					while (result.next()) {
+						avaliderBoxRow = new AvaliderBoxRow(
+								result.getNString(1),
+		 						result.getInt(2),
+		 						result.getInt(3),
+								result.getInt(4)
+								 
+								);
+						listAvaliderBoxRow.add(avaliderBoxRow);
+					}
+				}
+				catch (SQLException e) { 
+					System.out.println("Select ListDeclarer KO : " + e);
+				}
+				return listAvaliderBoxRow;
+			};
+
 	
 	
 }
