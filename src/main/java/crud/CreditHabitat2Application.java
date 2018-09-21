@@ -10,6 +10,9 @@ import crud.controller.DeclarerControler;
 import crud.controller.DonneesControler;
 import crud.controller.MaterielControler;
 import crud.controller.RegroupementControler;
+import crud.controllerMail.MailContoller;
+import crud.controllerExcel.ExcelController;
+
 
 //@ApplicationPath("/rest")/*
 public class CreditHabitat2Application extends ResourceConfig {
@@ -21,8 +24,9 @@ public class CreditHabitat2Application extends ResourceConfig {
 		    this.register(RegroupementControler.class);
 		    this.register(DonneesControler.class);
 		    this.register(DeclarerControler.class);
-
-
+		    this.register(MailContoller.class);
+		    this.register(ExcelController.class);
+		    
 		    this.register(CORSResponseFilter.class);
 
 		    this.register(new DependencyBinder());

@@ -17,6 +17,8 @@ import crud.service.MaterielService;
 import crud.service.MaterielServiceImpl;
 import crud.service.RegroupementService;
 import crud.service.RegroupementServiceImpl;
+import crud.serviceExcel.ExcelService;
+import crud.serviceMail.EmailService;
 
 public class DependencyBinder extends AbstractBinder {
 	 @Override
@@ -26,6 +28,8 @@ public class DependencyBinder extends AbstractBinder {
 	       bind(RegroupementServiceImpl.class).to(RegroupementService.class);
 	       bind(DonneesServiceImpl.class).to(DonneesService.class);
 	       bind(DeclarerServiceImpl.class).to(DeclarerService.class);
+	       bind(EmailService.class).to(EmailService.class);
+	       bind(ExcelService.class).to(ExcelService.class);
 
 
 	       bind(MaterielDAO.class).to(MaterielDAO.class);
