@@ -160,7 +160,6 @@ public class DeclarerDAO extends DAO<Declarer> {
 			+ "AND DONN.AN_TRIM_TRAIT = ? "  
 			+ "AND DONN.NUM_TRIM_TRAIT = ? " 
 			+ "AND DONN.CODE_MAT  =  MAT.CODE_MAT "  
-			+ "AND CODE_REGROUP_MAT = ? " 
 			+ "GROUP BY ( DONN.CODE_SOC, DONN.CODE_PTT,  MAT.CODE_REGROUP_MAT,  "
 			+ "DONN.NUM_TRIM_TRAIT, DONN.AN_TRIM_TRAIT) ";
 		
@@ -239,29 +238,20 @@ public class DeclarerDAO extends DAO<Declarer> {
 
 
 	//====== SUITE A VALIDATION SUR ECRAN A VALIDER =================
-		public  void validSave(String soc, int an, int trim, String regroup) { 
+		public  void validSave(String soc, int an, int trim ) { 
 			
  			
-			Date dateSQL = new  Date(Calendar.getInstance().getTime().getTime());
- 
- 			
-			System.out.println("g");
-			
- 			System.out.println("datejour");  
-			System.out.println(dateSQL);  
-			System.out.println(dateSQL.toString());  
-
-			
+			Date dateJourSQL = new  Date(Calendar.getInstance().getTime().getTime());
+  
 			try {
 				PreparedStatement prepare = this.connect
 						.prepareStatement(SQLINSERTAVAL);
 				prepare.setString(1, "UTIL");
-				prepare.setDate(2, dateSQL);
+				prepare.setDate(2, dateJourSQL);
 				prepare.setString(3, soc);
 	 			prepare.setInt(4, an);
 				prepare.setInt(5, trim);
-				prepare.setString(6, regroup);
-
+ 
 				
 				prepare.executeUpdate();
 			}

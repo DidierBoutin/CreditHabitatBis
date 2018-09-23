@@ -86,10 +86,8 @@ public class DonneesControler {
   							) {
 		  System.out.println("del rm1");
 
- 		  donneesService.deleteAval(soc, an, trim, "RM1");
-		  System.out.println("del rm2");
-
- 		  donneesService.deleteAval(soc, an, trim, "RM2");
+ 		  donneesService.deleteAval(soc, an, trim);
+		   
 
 	}
 	

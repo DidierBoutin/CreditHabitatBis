@@ -36,8 +36,8 @@ public class DeclarerServiceImpl implements DeclarerService {
 		return declarerDAO.update(declarer);
 	}
 
-	public void validSave(String soc, int an, int trim, String regroup) {
-		declarerDAO.validSave(soc, an, trim, regroup);
+	public void validSave(String soc, int an, int trim) {
+		declarerDAO.validSave(soc, an, trim);
 	}
 	
 

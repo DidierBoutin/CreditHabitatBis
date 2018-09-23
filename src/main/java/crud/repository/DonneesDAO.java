@@ -35,12 +35,11 @@ public class DonneesDAO extends DAO<Donnees> {
 							+ "AND  AN_TRIM_TRAIT = ? AND CODE_DEV = ? ";
 	
 	private final static String 
-					SQLDELAVAL = "DELETE FROM DONNEES DONN "
-			+ "WHERE   DONN.CODE_SOC = ? AND DONN.NUM_TRIM_TRAIT = ? AND DONN.AN_TRIM_TRAIT = ? "
-			+ " AND DONN.CODE_MAT IN "
-			+ " (SELECT  MAT.CODE_MAT FROM MATERIEL MAT "
-			+ " WHERE MAT.CODE_MAT = DONN.CODE_MAT "
-			+ " AND MAT.CODE_REGROUP_MAT = ?) ";
+					SQLDELAVAL = "DELETE FROM DONNEES "
+			+ "WHERE   CODE_SOC = ? "
+			+ "AND NUM_TRIM_TRAIT = ? "
+			+ "AND AN_TRIM_TRAIT = ? ";
+			 
 	
 	private final static String 
 					SQLUPDATE = "UPDATE DONNEES "
@@ -263,7 +262,7 @@ public class DonneesDAO extends DAO<Donnees> {
  
 	
 	//======= Pour supprimer les DONNEES suite à une validation
-	public  void deleteAval(String soc, int an, int trim, String regroup) { 
+	public  void deleteAval(String soc, int an, int trim) { 
 		
 		try {
 			 
@@ -272,7 +271,6 @@ public class DonneesDAO extends DAO<Donnees> {
 			prepare.setString(1, soc);
 			prepare.setInt(2, trim);
  			prepare.setInt(3, an);
- 			prepare.setString(4, regroup);
 			 
 			
 			prepare.executeUpdate();
@@ -367,6 +365,8 @@ public class DonneesDAO extends DAO<Donnees> {
 	//====== RECUP INFO POUR ECRAN "A VALIDER" =================
 			public List<AvaliderRow> findAvalider(String soc, int an, int trim) { 
 
+				
+				
 				List<AvaliderRow> listAvalider = new ArrayList<AvaliderRow>();
 	 			AvaliderRow avaliderRow = new AvaliderRow();
 				System.out.println("findAvalider");

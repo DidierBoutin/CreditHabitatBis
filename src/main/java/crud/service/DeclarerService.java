@@ -11,7 +11,7 @@ public interface DeclarerService {
 		public Declarer create(Declarer declarer);
 		public void delete(Declarer declarer);
 		public Declarer update(Declarer declarer);
-		public void validSave(String soc, int an, int trim, String regroup);
+		public void validSave(String soc, int an, int trim);
 
 }
 	

@@ -68,10 +68,8 @@ public class DeclarerControler {
  							@PathParam(value="trim") int trim)
   {
  		  System.out.println("postr ");
-			declarerService.validSave(soc, an, trim, "RM1");
-	 		  System.out.println("postr rm2");
- 		  declarerService.validSave(soc, an, trim, "RM2");
- 		  System.out.println("postr");
+			declarerService.validSave(soc, an, trim);
+  		   
 
 	}
 	

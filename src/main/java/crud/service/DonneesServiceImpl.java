@@ -34,8 +34,8 @@ public class DonneesServiceImpl implements DonneesService {
     	donneesDAO.delete(donnee);
     }
     
-    public void deleteAval(String soc, int an, int trim, String regroup) {
-    	donneesDAO.deleteAval(soc, an, trim, regroup);
+    public void deleteAval(String soc, int an, int trim ) {
+    	donneesDAO.deleteAval(soc, an, trim);
     }
     
     public Donnees update(Donnees donnee) {

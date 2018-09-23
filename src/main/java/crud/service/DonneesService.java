@@ -11,7 +11,7 @@ public interface DonneesService {
 	public List<Donnees> findAll();
 	public Donnees create(Donnees donnee);
 	public void delete(Donnees donnee);
-	public void deleteAval(String soc,  int an, int trim, String regroup);
+	public void deleteAval(String soc,  int an, int trim);
 	public Donnees update(Donnees donnee);
 	public List<AvaliderRow> findAvalider(String soc, int an, int trim); 
 	public List<AvaliderBoxRow> findAvaliderBox(); 
