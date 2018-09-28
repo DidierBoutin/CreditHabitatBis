@@ -7,6 +7,7 @@ import java.util.List;
 
  import crud.model.Regroupm;
 public class RegroupementDAO extends DAO<Regroupm> {
+	
 	private final static String 
 					SQLFIND = "SELECT * "
 							+ "FROM REGROUPM "
@@ -17,6 +18,8 @@ public class RegroupementDAO extends DAO<Regroupm> {
 					SQLFINDALL = "SELECT * "
 							+ "FROM REGROUPM "
 							+ "ORDER BY  CODE_REGROUP_MAT";
+	
+
 	
 	private final static String 
 					SQLCREATE = "INSERT INTO REGROUPM "
@@ -63,6 +66,9 @@ public class RegroupementDAO extends DAO<Regroupm> {
 		System.out.println("return Regroupm : " + regroupm.toString());
 		return regroupm;
 	}
+	
+	
+	
 	//====== CREATE : Create a Regroupm =================
 	public Regroupm create(Regroupm regroupm) { 
 		try {

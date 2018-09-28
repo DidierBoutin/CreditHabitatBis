@@ -8,26 +8,26 @@ public class AvaliderRow {
 	private final int mtRg1;
 	private final int nbDossRg2;
 	private final int mtRg2;
+	
 	private final int mtTot;
 
 
 	public AvaliderRow() {
 		this(null, null, 0, 0, 0, 0, 0);
 	}
-	   
-	
-	
-	
-	
+	 
 	  public AvaliderRow(String departement, String codePTT, 
-			  int nbDossRg1, int mtRg1,int nbDossRg2, int mtRg2, int mtTot) {
+			  int nbDossRg1, int mtRg1, int nbDossRg2, int mtRg2, 
+ 			  int mtTot) {
 		  this.departement = departement;
 		  this.codePTT = codePTT;
 		  this.nbDossRg1  = nbDossRg1;
 		  this.mtRg1 = mtRg1;
-		  this.nbDossRg2 = mtRg2;
+		  this.nbDossRg2 = nbDossRg2;
 		  this.mtRg2 = mtRg2;
 		  this.mtTot = mtTot;
+		  
+		  
  	  }
 
 
@@ -37,50 +37,23 @@ public class AvaliderRow {
 	public String getDepartement() {
 		return departement;
 	}
-
-
-
-
-
 	public String getCodePTT() {
 		return codePTT;
 	}
-
-
-
-
-
 	public int getNbDossRg1() {
 		return nbDossRg1;
 	}
 
-
-
-
-
 	public int getMtRg1() {
 		return mtRg1;
 	}
-
-
-
-
-
 	public int getNbDossRg2() {
 		return nbDossRg2;
 	}
-
-
-
-
-
 	public int getMtRg2() {
 		return mtRg2;
 	}
-
-
-
-
+	 
 
 	public int getMtTot() {
 		return mtTot;

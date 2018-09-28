@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import crud.dto.AvaliderBoxRow;
+import crud.dto.AvaliderRowTempo;
 import crud.model.Declarer;
 import crud.repository.DeclarerDAO;
 
@@ -40,6 +42,12 @@ public class DeclarerServiceImpl implements DeclarerService {
 		declarerDAO.validSave(soc, an, trim);
 	}
 	
-
+	public List<AvaliderRowTempo> findValides(String soc, int an, int trim) {
+		return declarerDAO.findValides(soc, an, trim);
+	}
+	
+	public List<AvaliderBoxRow> findAvaliderBox() {
+		return declarerDAO.findAvaliderBox();
+	}
 	
 }

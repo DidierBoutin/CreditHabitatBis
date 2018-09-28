@@ -10,15 +10,20 @@ import java.sql.Date;
 import java.util.List;
 
 import crud.dto.AvaliderBoxRow;
-import crud.dto.AvaliderRow;
+import crud.dto.AvaliderRowTempo;
 import crud.model.Declarer;
 
 
-public class DeclarerDAO extends DAO<Declarer> {
-
+public class DeclarerDAO  extends DAO<Declarer> {
  	
+	
 	private final static String 
-					SQLFIND = "SELECT * "
+	SQLNBREG = "SELECT COUNT(*) "
+			+ "FROM REGROUPM ";
+ 
+	
+	private final static String 
+ 					SQLFIND = "SELECT * "
 							+ "FROM DECLARER "
 							+ "WHERE CODE_SOC = ? AND CODE_PTT = ? "
 							+ "AND CODE_REGROUP_MAT = ?  AND  NUM_TRIM_DEC= ? "
@@ -54,84 +59,11 @@ public class DeclarerDAO extends DAO<Declarer> {
 							+ "AND CODE_REGROUP_MAT = ?  AND  NUM_TRIM_DEC= ? "
 							+ "AND  AN_TRIM_DEC= ? AND CODE_DEV = ? ";
 	
-	//resquete de selection "DTO" pour la liste d'affichage
-	// de l'écran A AVALIDER ===> DONNESS
-	private final static String 
-					SQLVALIDES = 
-							"SELECT DEP.NOM_DEP, DEP.CODE_PTT, " 
-									+ "DECL1.NB_DOSS_DEC, DECL1.MONTANT_DEC, " 
-									+ "DECL2.NB_DOSS_DEC, DECL2.MONTANT_DEC, "
-									+ "DECL1.MONTANT_DEC + DECL2.MONTANT_DEC "
-									+ "FROM DECLARER DECL1, DECLARER DECL2, DEPARTEMENT DEP, "
-									+ "TOTPROD TOT "
-									+ "WHERE DECL1.CODE_SOC = DECL2.CODE_SOC "
-									+ "AND DECL1.CODE_PTT = DECL2.CODE_PTT "
-									+ "AND DECL1.NUM_TRIM_DEC = DECL2.NUM_TRIM_DEC " 
-									+ "AND DECL1.AN_TRIM_DEC = DECL2.AN_TRIM_DEC " 
-		 							+ "AND DECL1.CODE_DEV = DECL2.CODE_DEV "
-		 							+ "AND DECL1.CODE_SOC = TOT.CODE_SOC "
- 									+ "AND DECL1.NUM_TRIM_DEC = TOT.NUM_TRIM_TRAIT " 
-									+ "AND DECL1.AN_TRIM_DEC = TOT.AN_TRIM_TRAIT " 
-		 							+ "AND DECL1.CODE_DEV = TOT.CODE_DEV "
-									+ "AND DECL1.CODE_DEV = 'EUR' "
-									+ "AND DECL1.CODE_PTT = DEP.CODE_PTT "
-									+ "AND (DECL1.CODE_REGROUP_MAT = 'RM1' "
-									+ "AND DECL2.CODE_REGROUP_MAT = 'RM2') "
-									+ "AND DECL1.CODE_SOC = ? "
-									+ "AND DECL1.AN_TRIM_DEC = ? "
-									+ "AND DECL1.NUM_TRIM_DEC = ?  "
-									
-									+ " UNION "
-									
-									+ "SELECT DEP.NOM_DEP, DEP.CODE_PTT, " 
-									+ "DECL1.NB_DOSS_DEC, DECL1.MONTANT_DEC, 0, 0, DECL1.MONTANT_DEC " 
-									+ "FROM DECLARER DECL1, DEPARTEMENT DEP, TOTPROD TOT " 
-									+ "WHERE DECL1.CODE_PTT = DEP.CODE_PTT " 
-									+ "AND DECL1.CODE_REGROUP_MAT = 'RM1' " 
-		 							+ "AND DECL1.CODE_DEV = 'EUR' "
-		 							+ "AND DECL1.CODE_SOC = TOT.CODE_SOC "
-		 							+ "AND DECL1.NUM_TRIM_DEC = TOT.NUM_TRIM_TRAIT " 
-									+ "AND DECL1.AN_TRIM_DEC = TOT.AN_TRIM_TRAIT " 
-		 							+ "AND DECL1.CODE_DEV = TOT.CODE_DEV "
-									+ "AND DECL1.CODE_SOC = ? "
-									+ "AND DECL1.AN_TRIM_DEC = ? " 
-									+ "AND DECL1.NUM_TRIM_DEC = ? " 
-									+ "AND NOT EXISTS "  
-									+ "(SELECT * FROM DECLARER DECL2 " 
-									+ "WHERE DECL1.CODE_PTT = DECL2.CODE_PTT " 
-									+ "AND  DECL1.CODE_SOC = DECL2.CODE_SOC "
-									+ "AND DECL1.NUM_TRIM_DEC = DECL2.NUM_TRIM_DEC "
-									+ "AND DECL1.AN_TRIM_DEC = DECL2.AN_TRIM_DEC " 
-									+ "AND DECL1.CODE_DEV = DECL2.CODE_DEV "
-									+ "AND DECL2.CODE_REGROUP_MAT = 'RM2') " 
-
-									+ "UNION " 
-								
-							 		+ "SELECT DEP.NOM_DEP, DEP.CODE_PTT, 0, 0, "
-									+ "DECL1.NB_DOSS_DEC, DECL1.MONTANT_DEC, DECL1.MONTANT_DEC " 
-									+ "FROM DECLARER DECL1, DEPARTEMENT DEP, TOTPROD TOT "
-									+ "WHERE  DECL1.CODE_PTT = DEP.CODE_PTT "
-									+ "AND DECL1.CODE_SOC = TOT.CODE_SOC "
-									+ "AND DECL1.NUM_TRIM_DEC = TOT.NUM_TRIM_TRAIT " 
-									+ "AND DECL1.AN_TRIM_DEC = TOT.AN_TRIM_TRAIT " 
-		 							+ "AND DECL1.CODE_DEV = TOT.CODE_DEV "
-									+ "AND DECL1.CODE_REGROUP_MAT = 'RM2' "
-		 							+ "AND DECL1.CODE_DEV = 'EUR' "
-									+ "AND DECL1.CODE_SOC = ? "
-									+ "AND DECL1.AN_TRIM_DEC = ? "
-									+ "AND DECL1.NUM_TRIM_DEC = ? "
-									+ "AND NOT EXISTS "
-									+ "(SELECT * FROM DECLARER DECL2 "
-									+ "WHERE DECL1.CODE_PTT = DECL2.CODE_PTT "
-									+ "AND  DECL1.CODE_SOC = DECL2.CODE_SOC "
-									+ "AND DECL1.NUM_TRIM_DEC = DECL2.NUM_TRIM_DEC " 
-									+ " AND DECL1.AN_TRIM_DEC = DECL2.AN_TRIM_DEC " 
-									+ "AND DECL1.CODE_DEV = DECL2.CODE_DEV "
-									+ "AND DECL2.CODE_REGROUP_MAT = 'RM1') "
-									+ " ORDER BY 2";
+	
+	
 	
 	//requete de selection "DTO" 
-	// pour  la box de selection de  l'ecran A VALIDER
+	// pour  la box de selection de  l'ecran VALIDES
 	private final static String 
 				SQLPERIODEVAL = 
 						  "SELECT DECL.CODE_SOC,  " 
@@ -373,50 +305,89 @@ public class DeclarerDAO extends DAO<Declarer> {
 	};
 	
 	//====== RECUP INFO POUR ECRAN "A VALIDER" =================
-		public List<AvaliderRow> findAvalider(String soc, int an, int trim) { 
+		public List<AvaliderRowTempo> findValides(String soc, int an, int trim) { 
 
-			List<AvaliderRow> listAvalider = new ArrayList<AvaliderRow>();
- 			AvaliderRow avaliderRow = new AvaliderRow();
-			System.out.println("findAvalider");
+			int nbReg =  findNbReg();
 			
-			System.out.println("soc"); 			System.out.println(soc);
-			System.out.println("an"); 			System.out.println(an);
-			System.out.println("trim"); 			System.out.println(trim);
+			
+			//resquete de selection "DTO" pour la liste d'affichage
+			// de l'écran A AVALIDER ===> DONNESS
+			
+			
+			 String sqlvalides1 = "SELECT NOM_DEP,  CODEPTT" ;
+			 String sqlvalides2A  = "";
+			 String sqlvalides2B  = ", SUM(MTRG1)";
+			 
+			 String sqlvalides3 = "FROM (SELECT   CODE_SOC, AN_TRIM_DEC,  NUM_TRIM_DEC , " + 
+									"DEP.NOM_DEP, DEP.CODE_PTT AS CODEPTT" ;
+			 String sqlvalides4  = "";
+			 String sqlvalides5 = " FROM DECLARER DECL, DEPARTEMENT DEP " + 
+						"WHERE DECL.CODE_PTT  = DEP.CODE_PTT ) " + 
+						"WHERE AN_TRIM_DEC  = ? AND NUM_TRIM_DEC = ? AND CODE_SOC = ? " + 
+						"GROUP BY NOM_DEP, CODEPTT " + 
+						"ORDER BY 1, 2, 3, 5 ";
+		 	int j = 0;
+ 			for(int i=1; i < nbReg+1; i++) {
+ 				j = i-1;
+				 sqlvalides2A = sqlvalides2A + ", SUM(NBRG" + i + "), SUM(MTRG" + i + ")" ;
 
+				sqlvalides4 = sqlvalides4 + 
+					", (CASE WHEN CODE_REGROUP_MAT = (SELECT CODE_REGROUP_MAT FROM REGROUPM "
+					+ "ORDER BY CODE_REGROUP_MAT LIMIT 1 OFFSET " + j
+					+ ") THEN NB_DOSS_DEC ELSE 0 END) AS NBRG" + i
+					+ ", (CASE WHEN CODE_REGROUP_MAT = (SELECT CODE_REGROUP_MAT FROM REGROUPM "
+					+ "ORDER BY CODE_REGROUP_MAT LIMIT 1 OFFSET " + j
+					+ ") THEN MONTANT_DEC ELSE 0 END) AS MTRG" + i ;
+					
+			}
+ 			
+ 			for(int i=2; i < nbReg+1; i++) {
+				 sqlvalides2B = sqlvalides2B + 
+							" + SUM(MTRG" + i + ")" ;
+			}
+			
+ 			
+			String sqlvalides = sqlvalides1 + sqlvalides2A + sqlvalides2B  
+					+ sqlvalides3 + sqlvalides4 + sqlvalides5;
+					
 
+			List<AvaliderRowTempo> listAvalider = new ArrayList<AvaliderRowTempo>();
+ 			AvaliderRowTempo avaliderRowTempo = new AvaliderRowTempo();
+			 
 			try {
-				System.out.println("SQLVALIDES");	System.out.println(SQLVALIDES);
-
-
-				PreparedStatement prepare =this.connect.prepareStatement(SQLVALIDES);
-//				prepare.setString(1, soc);prepare.setString(4, soc);prepare.setString(7, soc);
-//				prepare.setInt(2, an);prepare.setInt(5, an);prepare.setInt(8, an);
-//				prepare.setInt(3, trim);prepare.setInt(6, an);prepare.setInt(9, an);
-				prepare.setString(1, soc);
-				prepare.setInt(2, an); 
-				prepare.setInt(3, trim);
-				prepare.setString(4, soc);
-				prepare.setInt(5, an); 
-				prepare.setInt(6, trim);
-				prepare.setString(7, soc);
-				prepare.setInt(8, an); 
-				prepare.setInt(9, trim);
+				PreparedStatement prepare =this.connect.prepareStatement(sqlvalides);
+				prepare.setInt(1, an);
+				prepare.setInt(2, trim); 
+				prepare.setString(3, soc);
+				 
 				ResultSet result = prepare.executeQuery(); 
 
 				System.out.println("result");	System.out.println(result);
-
+				 
 				while (result.next()) {
 					System.out.println("next");
-					avaliderRow = new AvaliderRow(
+					List<Integer> listNbDoss = new ArrayList<Integer>();
+					List<Integer> listMtDoss = new ArrayList<Integer>();
+
+		 			for(int i=1; i < (2*nbReg)+1; i= i + 2) {
+		 				;
+		 				listNbDoss.add(result.getInt(i+2));
+		 				listMtDoss.add(result.getInt(i+3));
+		 				;
+		 			};
+
+		 			System.out.println(listNbDoss.get(1));
+		 			System.out.println(listMtDoss.get(1));
+
+					avaliderRowTempo = new AvaliderRowTempo(
 							result.getNString(1),
 							result.getNString(2),
-							result.getInt(3),
-							result.getInt(4),
-							result.getInt(5),
-							result.getInt(6),
-							result.getInt(7) 
+							listNbDoss,
+							listMtDoss,
+							result.getInt((2*nbReg)+3)
 							);
-					listAvalider.add(avaliderRow);
+ ;
+					listAvalider.add(avaliderRowTempo);
 				}
 			}
 			catch (SQLException e) { 
@@ -425,6 +396,7 @@ public class DeclarerDAO extends DAO<Declarer> {
 			return listAvalider;
 		};
 
+	 
 		//====== RECUP DTO POUR BOX DE PAGE A VALIDER =================
 		public List<AvaliderBoxRow> findAvaliderBox() { 
 
@@ -457,6 +429,32 @@ public class DeclarerDAO extends DAO<Declarer> {
 			return listAvaliderBoxRow;
 		};
 
+		
+		//====== FIND NB REGROUPEMENT ==================
+		public  int findNbReg() {
+	 
+	 			int nbReg = 0;
+			
+	 			
+	 			
+ 				try {
+					System.out.println("Connect");
+					ResultSet result = this.connect
+							.createStatement(
+									ResultSet.TYPE_SCROLL_INSENSITIVE,
+									ResultSet.CONCUR_UPDATABLE)
+							.executeQuery(SQLNBREG);
+
+					while (result.next()) {
+						nbReg =  result.getInt(1);
+	 						
+	 				}
+				}
+				catch (SQLException e) { 
+					System.out.println("Select NnReg : " + e);
+				}
+				return nbReg;
+			};
 	
 }
 
